@@ -16,9 +16,16 @@
 
     <dependencies>
         <dependency>
+            <!-- Doc link: https://javadoc.io/doc/com.squareup.okhttp3/okhttp/3.14.9/okhttp3/package-summary.html -->
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
             <version>5.0.0-alpha.14</version>
+        </dependency>
+        <dependency>
+            <!-- Doc link: https://www.json.org/json-en.html -->
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20240303</version>
         </dependency>
     </dependencies>
 
