@@ -1,20 +1,29 @@
 package org.cryptoserver;
 
 import org.cryptoserver.engine.CoinAPIManager;
+import org.cryptoserver.server.Server;
 import org.cryptoserver.storage.Database;
+import org.cryptoserver.users.UserManager;
 import org.json.JSONArray;
+
+import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) {
         System.out.println("The server is starting!");
-        System.out.println();
 
         System.out.println("Try to connect to the database...");
         Database.getInstance();
+        System.out.println("Try to load users manager...");
+        UserManager.getInstance();
 
         System.out.println("Database & all managers are loaded!");
-        System.out.println("Test section:");
-        System.out.println();
+
+        try (Server server = new Server(30000)) {
+            server.listenClientConnection();
+        } catch (IOException e) {
+            System.out.println("Server could not be started!");
+        }
     }
 
     public static void testAPI() {
