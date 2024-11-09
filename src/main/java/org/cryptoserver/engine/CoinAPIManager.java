@@ -1,12 +1,12 @@
 package org.cryptoserver.engine;
 
 import okhttp3.*;
+import org.cryptoserver.config.Configuration;
 import org.json.JSONArray;
 
 public class CoinAPIManager {
 
     private static CoinAPIManager instance;
-    private final String API_KEY = "202BAFCB-6607-4890-AAE0-111CBE7E4681";
     private OkHttpClient client;
     private MediaType mediaType;
 
@@ -54,7 +54,7 @@ public class CoinAPIManager {
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("Accept", "text/plain")
-                .addHeader("X-CoinAPI-Key", API_KEY)
+                .addHeader("X-CoinAPI-Key", Configuration.API_KEY)
                 .build();
 
         // Try to parse the response to a JSONArray

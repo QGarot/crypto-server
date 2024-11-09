@@ -28,12 +28,11 @@
             <version>20240303</version>
         </dependency>
         <dependency>
-            <!-- Doc link: https://github.com/brettwooldridge/HikariCP -->
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <version>5.1.0</version>
+            <!-- Doc link: https://github.com/mysql/mysql-connector-j -->
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.33</version>
         </dependency>
-
     </dependencies>
 
 </project>
