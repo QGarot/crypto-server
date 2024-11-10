@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class Connection {
+public class Connection implements Runnable {
 
     // A socket is an endpoint for communication between two machines.
     private Socket socket;
@@ -23,6 +23,18 @@ public class Connection {
         this.writer = new PrintWriter(this.getSocket().getOutputStream(), true);
     }
 
+    @Override
+    public void run() {
+        // Continuous listening of incoming data
+        this.listenMessages();
+        // if the connection can't listen anymore, then the connection has to be closed
+        this.closeConnection();
+    }
+
+    public void log(String message) {
+        System.out.println("[" + this.getSocket().getRemoteSocketAddress() + "] " + message);
+    }
+
     /**
      * Handles messages which are incoming data
      */
@@ -33,9 +45,7 @@ public class Connection {
                 this.onEvent(this.getParsedMessage(message));
             }
         } catch (IOException e) {
-            System.out.println("Can not read the received message");
-        } finally {
-            this.closeConnection();
+            this.log("Can not read the received message");
         }
     }
 
@@ -49,7 +59,7 @@ public class Connection {
         try {
             jsonObject = new JSONObject(message);
         } catch (JSONException e) {
-            System.out.println("JSON Exception: can not parse the message");
+            this.log("JSON Exception: can not parse the message");
         }
         return jsonObject;
     }
@@ -62,9 +72,9 @@ public class Connection {
             this.getReader().close();
             this.getWriter().close();
             this.getSocket().close();
-            System.out.println("Connection closed.");
+            this.log("Connection closed.");
         } catch (IOException e) {
-            System.out.println("Can not close the connection.");
+            this.log("Can not close the connection.");
         }
     }
 
@@ -91,11 +101,9 @@ public class Connection {
     public void onEvent(JSONObject jsonObject) {
         if (jsonObject != null) {
 
-            System.out.println(this.getSocket().getRemoteSocketAddress().toString() + " sends: ");
-            System.out.println(jsonObject);
-            System.out.println();
+            this.log("Sends: " + jsonObject);
         } else {
-            System.out.println("The incoming event is null.");
+            this.log("The incoming event is null.");
         }
     }
 }
