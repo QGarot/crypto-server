@@ -1,6 +1,7 @@
 package org.cryptoserver;
 
 import org.cryptoserver.engine.CoinAPIManager;
+import org.cryptoserver.packets.PacketsHandler;
 import org.cryptoserver.server.Server;
 import org.cryptoserver.storage.Database;
 import org.cryptoserver.users.UserManager;
@@ -12,10 +13,9 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("The server is starting!");
 
-        System.out.println("Try to connect to the database...");
         Database.getInstance();
-        System.out.println("Try to load users manager...");
         UserManager.getInstance();
+        PacketsHandler.getInstance();
 
         System.out.println("Database & all managers are loaded!");
 

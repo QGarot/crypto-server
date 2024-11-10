@@ -1,5 +1,6 @@
 package org.cryptoserver.server;
 
+import org.cryptoserver.packets.PacketsHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -95,13 +96,22 @@ public class Connection implements Runnable {
     }
 
     /**
+     * Send a packet to the client (a packet has to contain a header to be read by the client)
+     * @param packet:
+     */
+    public void sendPacket(JSONObject packet) {
+        this.getWriter().println(packet.toString());
+        this.log("Server sends: " + packet.toString());
+    }
+
+    /**
      * Handles an event which is an incoming data parsed into a JSONObject
      * @param jsonObject: collected data
      */
     public void onEvent(JSONObject jsonObject) {
         if (jsonObject != null) {
-
-            this.log("Sends: " + jsonObject);
+            this.log("Client sends: " + jsonObject);
+            PacketsHandler.getInstance().handle(this, jsonObject);
         } else {
             this.log("The incoming event is null.");
         }
