@@ -26,5 +26,8 @@ public class Server extends ServerSocket {
         // Create a connection object and add it to the list of all current connections
         Connection connection = new Connection(clientSocket);
         this.getConnections().add(connection);
+
+        // Make the connection listen for incoming data
+        connection.listenMessages();
     }
 }

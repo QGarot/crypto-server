@@ -21,34 +21,50 @@ public class Connection {
         this.socket = socket;
         this.reader = new BufferedReader(new InputStreamReader(this.getSocket().getInputStream()));
         this.writer = new PrintWriter(this.getSocket().getOutputStream(), true);
-        this.listenMessages();
     }
 
     /**
-     * Messages are incoming data
+     * Handles messages which are incoming data
      */
     public void listenMessages() {
         String message;
-
-        // Try to read new data coming from client (String)
         try {
-            message = this.getReader().readLine();
-
-            // Try to parse the message to a JSONArray
-            JSONObject jsonObject = null;
-            try {
-                jsonObject = new JSONObject(message);
-            } catch (JSONException e) {
-                System.out.println("JSON Exception: can not parse the received message");
-                System.out.println(e.getMessage());
-            }
-
-            // if the JSONObject is not null, then it is ready to be processed
-            if (jsonObject != null) {
-                this.onEvent(jsonObject);
+            while ((message = this.getReader().readLine()) != null) {
+                this.onEvent(this.getParsedMessage(message));
             }
         } catch (IOException e) {
             System.out.println("Can not read the received message");
+        } finally {
+            this.closeConnection();
+        }
+    }
+
+    /**
+     * Parses the string message into a JSONObject
+     * @param message : incoming message, which is not null
+     * @return
+     */
+    public JSONObject getParsedMessage(String message) {
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(message);
+        } catch (JSONException e) {
+            System.out.println("JSON Exception: can not parse the message");
+        }
+        return jsonObject;
+    }
+
+    /**
+     * Close the reader, writer and the socket
+     */
+    public void closeConnection() {
+        try {
+            this.getReader().close();
+            this.getWriter().close();
+            this.getSocket().close();
+            System.out.println("Connection closed.");
+        } catch (IOException e) {
+            System.out.println("Can not close the connection.");
         }
     }
 
@@ -69,10 +85,17 @@ public class Connection {
     }
 
     /**
-     * An event is an incoming data parsed into a JSONObject
+     * Handles an event which is an incoming data parsed into a JSONObject
      * @param jsonObject: collected data
      */
     public void onEvent(JSONObject jsonObject) {
-        System.out.println(jsonObject.toString());
+        if (jsonObject != null) {
+
+            System.out.println(this.getSocket().getRemoteSocketAddress().toString() + " sends: ");
+            System.out.println(jsonObject);
+            System.out.println();
+        } else {
+            System.out.println("The incoming event is null.");
+        }
     }
 }
