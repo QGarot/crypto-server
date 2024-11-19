@@ -5,7 +5,6 @@ import org.cryptoserver.packets.PacketsHandler;
 import org.cryptoserver.server.Server;
 import org.cryptoserver.storage.Database;
 import org.cryptoserver.users.UserManager;
-import org.json.JSONArray;
 
 import java.io.IOException;
 
@@ -16,6 +15,7 @@ public class Main {
         Database.getInstance();
         UserManager.getInstance();
         PacketsHandler.getInstance();
+        CoinAPIManager.getInstance();
 
         System.out.println("Database & all managers are loaded!");
 
@@ -24,12 +24,17 @@ public class Main {
         } catch (IOException e) {
             System.out.println("Server could not be started!");
         }
+        //testAPI();
     }
 
     public static void testAPI() {
         System.out.println("Hello World!");
         System.out.println();
-        JSONArray data = CoinAPIManager.getInstance().getTimeSeriesData("BTC", "EUR", "1DAY", "2024-01-01T00:00:00", 360);
-        System.out.println(data.get(301));
+        //JSONArray data = CoinAPIManager.getInstance().getTimeSeriesData("ETH", "EUR", "1DAY", "2024-01-01T00:00:00", "2024-11-05T00:00:00", 365);
+        //System.out.println(CoinAPIManager.getInstance().getCryptocurrencies());
+        //JSONArray data = CoinAPIManager.getInstance().getTimeSeriesData2("BTC", "EUR", "1DAY", "2024-01-01T00:00:00", "2024-11-05T00:00:00", 365);
+//        for (int i = 0; i < data.length(); i++) {
+//            System.out.println(data.optString(i));
+//        }
     }
 }

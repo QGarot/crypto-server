@@ -1,4 +1,4 @@
-package org.cryptoserver.packets.incoming;
+package org.cryptoserver.packets;
 
 import org.cryptoserver.server.Connection;
 import org.json.JSONObject;

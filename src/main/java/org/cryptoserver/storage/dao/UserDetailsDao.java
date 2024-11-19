@@ -40,4 +40,28 @@ public class UserDetailsDao {
 
         return userDetails;
     }
+
+    /**
+     * Update user details table with specified user details object given
+     * @param userDetails
+     */
+    public void save(UserDetails userDetails) {
+        Connection connection;
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        String sql = "UPDATE users SET username = ?, email = ? WHERE id = ?";
+
+        try {
+            connection = Database.getInstance().getConnection();
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, userDetails.getUsername());
+            preparedStatement.setString(2, userDetails.getEmail());
+            preparedStatement.setInt(3, userDetails.getId());
+            preparedStatement.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+    }
 }

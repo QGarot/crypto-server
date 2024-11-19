@@ -13,19 +13,28 @@ public class UserManager {
 
     public UserManager() {
         this.userDetailsDao = new UserDetailsDao();
-        this.users = new ArrayList<User>();
+        this.users = new ArrayList<>();
     }
 
     public static UserManager getInstance() {
         if (instance == null) {
             instance = new UserManager();
+            System.out.println("Users manager loaded!");
         }
-
         return instance;
     }
 
     public List<User> getLoggedUsers() {
         return this.users;
+    }
+
+    public User getUserByUsername(String username) {
+        for (User user : this.getLoggedUsers()) {
+            if (user.getDetails().getUsername().equals(username)) {
+                return user;
+            }
+        }
+        return null;
     }
 
     public boolean attemptLogin(String username, String password) {

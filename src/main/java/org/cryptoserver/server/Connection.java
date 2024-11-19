@@ -43,7 +43,7 @@ public class Connection implements Runnable {
         String message;
         try {
             while ((message = this.getReader().readLine()) != null) {
-                this.onEvent(this.getParsedMessage(message));
+                this.onPacket(this.getParsedMessage(message));
             }
         } catch (IOException e) {
             this.log("Can not read the received message");
@@ -96,24 +96,25 @@ public class Connection implements Runnable {
     }
 
     /**
-     * Send a packet to the client (a packet has to contain a header to be read by the client)
+     * Send a packet to the client (the packet has to contain a header to be read by the client)
      * @param packet:
      */
     public void sendPacket(JSONObject packet) {
-        this.getWriter().println(packet.toString());
-        this.log("Server sends: " + packet.toString());
+        String message = packet.toString();
+        this.getWriter().println(message);
+        this.log("Server sends: " + message);
     }
 
     /**
-     * Handles an event which is an incoming data parsed into a JSONObject
+     * Handles a packet which is an incoming data parsed into a JSONObject
      * @param jsonObject: collected data
      */
-    public void onEvent(JSONObject jsonObject) {
+    public void onPacket(JSONObject jsonObject) {
         if (jsonObject != null) {
             this.log("Client sends: " + jsonObject);
             PacketsHandler.getInstance().handle(this, jsonObject);
         } else {
-            this.log("The incoming event is null.");
+            this.log("The incoming packet is null.");
         }
     }
 }
