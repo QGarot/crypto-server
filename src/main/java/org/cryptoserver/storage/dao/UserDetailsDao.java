@@ -6,6 +6,7 @@ import org.cryptoserver.users.components.UserDetails;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class UserDetailsDao {
 
@@ -63,5 +64,25 @@ public class UserDetailsDao {
             System.out.println(e.getMessage());
         }
 
+    }
+
+    public void insert(String username, String email, String password) {
+        Connection connection;
+        PreparedStatement preparedStatement;
+
+        String sql = "INSERT users (username, email, password) VALUES (?, ? ,?)";
+
+        try {
+            connection = Database.getInstance().getConnection();
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, username);
+            preparedStatement.setString(2, email);
+            preparedStatement.setString(3, password);
+            preparedStatement.execute();
+
+            System.out.println("cc");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }
