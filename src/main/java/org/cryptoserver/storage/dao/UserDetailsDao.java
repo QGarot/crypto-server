@@ -42,6 +42,26 @@ public class UserDetailsDao {
         return userDetails;
     }
 
+    public boolean isRegistered(String username) {
+        Connection connection;
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        try {
+            connection = Database.getInstance().getConnection();
+            preparedStatement = connection.prepareStatement("SELECT * FROM users WHERE username = ?");
+            preparedStatement.setString(1, username);
+            resultSet = preparedStatement.executeQuery();
+
+            return resultSet.next();
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return false;
+    }
+
     /**
      * Update user details table with specified user details object given
      * @param userDetails
@@ -79,8 +99,6 @@ public class UserDetailsDao {
             preparedStatement.setString(2, email);
             preparedStatement.setString(3, password);
             preparedStatement.execute();
-
-            System.out.println("cc");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
