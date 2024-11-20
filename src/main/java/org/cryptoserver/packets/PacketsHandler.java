@@ -1,6 +1,7 @@
 package org.cryptoserver.packets;
 
 import org.cryptoserver.packets.authentication.LoginEvent;
+import org.cryptoserver.packets.authentication.RegisterEvent;
 import org.cryptoserver.packets.dashboard.CryptoSelectedEvent;
 import org.cryptoserver.packets.headers.IncomingHeaders;
 import org.cryptoserver.server.Connection;
@@ -20,6 +21,7 @@ public class PacketsHandler {
     public void registerEvents() {
         this.getEvents().put(IncomingHeaders.LOGIN_SUBMIT_EVENT, new LoginEvent());
         this.getEvents().put(IncomingHeaders.DASHBOARD_SELECT_CRYPTO_EVENT, new CryptoSelectedEvent());
+        this.getEvents().put(IncomingHeaders.REGISTER_SUBMIT_EVENT, new RegisterEvent());
     }
 
     public static PacketsHandler getInstance() {

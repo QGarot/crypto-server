@@ -6,6 +6,7 @@ import org.cryptoserver.users.components.UserDetails;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class UserDetailsDao {
 
@@ -41,6 +42,26 @@ public class UserDetailsDao {
         return userDetails;
     }
 
+    public boolean isRegistered(String username) {
+        Connection connection;
+        PreparedStatement preparedStatement;
+        ResultSet resultSet;
+
+        try {
+            connection = Database.getInstance().getConnection();
+            preparedStatement = connection.prepareStatement("SELECT * FROM users WHERE username = ?");
+            preparedStatement.setString(1, username);
+            resultSet = preparedStatement.executeQuery();
+
+            return resultSet.next();
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return false;
+    }
+
     /**
      * Update user details table with specified user details object given
      * @param userDetails
@@ -63,5 +84,23 @@ public class UserDetailsDao {
             System.out.println(e.getMessage());
         }
 
+    }
+
+    public void insert(String username, String email, String password) {
+        Connection connection;
+        PreparedStatement preparedStatement;
+
+        String sql = "INSERT users (username, email, password) VALUES (?, ? ,?)";
+
+        try {
+            connection = Database.getInstance().getConnection();
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, username);
+            preparedStatement.setString(2, email);
+            preparedStatement.setString(3, password);
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }
