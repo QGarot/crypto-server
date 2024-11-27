@@ -60,7 +60,7 @@ public class CoinAPIManager {
     }
 
     public boolean isPopularCryptocurrency(String id) {
-        return id.equals("BTC") || id.equals("XRP") || id.equals("ADA") || id.equals("ETH") || id.equals("SOL") || id.equals("LTC") || id.equals("XLM");
+        return id.equals("BTC") || id.equals("XRP") || id.equals("ADA") || id.equals("ETH") || id.equals("SOL") || id.equals("LTC") || id.equals("XLM") || id.equals("FTM") || id.equals("TIA") || id.equals("SUI") || id.equals("USDT") || id.equals("SEI") || id.equals("MOODENG") || id.equals("PEPE") || id.equals("WIF") || id.equals("FET") || id.equals("VET") || id.equals("GRASS");
     }
 
     public void loadCryptoCurrencies() {
