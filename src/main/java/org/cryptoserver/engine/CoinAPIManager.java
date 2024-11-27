@@ -2,6 +2,7 @@ package org.cryptoserver.engine;
 
 import okhttp3.*;
 import org.cryptoserver.config.Configuration;
+import org.cryptoserver.storage.dao.CryptocurrenciesDao;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -12,18 +13,26 @@ public class CoinAPIManager {
     private static CoinAPIManager instance;
     private OkHttpClient client;
     private MediaType mediaType;
-    private final HashMap<String, String> cryptoCurrencies;
+    private HashMap<String, String> cryptoCurrencies;
+    private final CryptocurrenciesDao cryptocurrenciesDao;
 
     public CoinAPIManager() {
         this.client = new OkHttpClient().newBuilder().build();
         this.mediaType = MediaType.parse("text/plain");
-        this.cryptoCurrencies = new HashMap<>();
-
+        this.cryptocurrenciesDao = new CryptocurrenciesDao();
         this.loadCryptoCurrencies();
     }
 
+    public CryptocurrenciesDao getCryptocurrenciesDao() {
+        return this.cryptocurrenciesDao;
+    }
+
     public HashMap<String, String> getCryptoCurrencies() {
-        return cryptoCurrencies;
+        return this.cryptoCurrencies;
+    }
+
+    public void setCryptoCurrencies(HashMap<String, String> cryptoCurrencies) {
+        this.cryptoCurrencies = cryptoCurrencies;
     }
 
     public static CoinAPIManager getInstance() {
@@ -50,35 +59,50 @@ public class CoinAPIManager {
         this.mediaType = mediaType;
     }
 
+    public boolean isPopularCryptocurrency(String id) {
+        return id.equals("BTC") || id.equals("XRP") || id.equals("ADA") || id.equals("ETH") || id.equals("SOL") || id.equals("LTC") || id.equals("XLM");
+    }
+
     public void loadCryptoCurrencies() {
-        // Make the request to CoinAPI
-        Request request = new Request.Builder()
-                .url("https://rest.coinapi.io/v1/assets")
-                .addHeader("Accept", "text/plain")
-                .addHeader("X-CoinAPI-Key", Configuration.API_KEY)
-                .build();
 
-        // Try to parse the response to a JSONArray
-        JSONArray jsonArray;
-        try {
-            Response response = client.newCall(request).execute();
-            jsonArray = new JSONArray(response.body().string());
-            JSONObject jsonObject;
+        if (Configuration.SAVE_CRYPTO_IN_DATABASE) {
+            this.setCryptoCurrencies(new HashMap<>());
 
-            // Load all data: -> (asset_id, name)
-            // Ex: (BTC, Bitcoin)
-            for (int i = 0; i < jsonArray.length(); i++) {
-                jsonObject = jsonArray.getJSONObject(i);
-                if ((int) jsonObject.get("type_is_crypto") == 1) {
+            // Make the request to CoinAPI
+            Request request = new Request.Builder()
+                    .url("https://rest.coinapi.io/v1/assets")
+                    .addHeader("Accept", "text/plain")
+                    .addHeader("X-CoinAPI-Key", Configuration.API_KEY)
+                    .build();
 
-                    // if (jsonObject.get("name").equals("Bitcoin") || jsonObject.get("name").equals("Ethereum") || jsonObject.get("name").equals("Solana"))
+            // Try to parse the response to a JSONArray
+            JSONArray jsonArray;
+            try {
+                Response response = this.getClient().newCall(request).execute();
+                jsonArray = new JSONArray(response.body().string());
+                JSONObject jsonObject;
+                String fullName;
+                String id;
 
-                    this.getCryptoCurrencies().put((String) jsonObject.get("name"), (String) jsonObject.get("asset_id"));
+                // Load all data: -> (asset_id, name)
+                // Ex: (BTC, Bitcoin)
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    jsonObject = jsonArray.getJSONObject(i);
+                    if ((int) jsonObject.get("type_is_crypto") == 1) {
+                        fullName = jsonObject.getString("name");
+                        id = jsonObject.getString("asset_id");
+                        if (this.isPopularCryptocurrency(id)) {
+                            this.getCryptoCurrencies().put((String) jsonObject.get("name"), (String) jsonObject.get("asset_id"));
+                            this.getCryptocurrenciesDao().insert(id, fullName);
+                        }
+                    }
                 }
-            }
 
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        } else {
+            this.setCryptoCurrencies(this.getCryptocurrenciesDao().getAll());
         }
     }
 
