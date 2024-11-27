@@ -1,7 +1,10 @@
 package org.cryptoserver.users;
 
+import org.cryptoserver.storage.dao.TransactionDao;
 import org.cryptoserver.storage.dao.UserDetailsDao;
 import org.cryptoserver.users.components.UserDetails;
+import org.cryptoserver.users.components.Wallet;
+import org.cryptoserver.wallets.Transaction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,10 +12,12 @@ import java.util.List;
 public class UserManager {
     public static UserManager instance;
     private final UserDetailsDao userDetailsDao;
+    private final TransactionDao transactionDao;
     private final List<User> users;
 
     public UserManager() {
         this.userDetailsDao = new UserDetailsDao();
+        this.transactionDao = new TransactionDao();
         this.users = new ArrayList<>();
     }
 
@@ -44,9 +49,15 @@ public class UserManager {
         UserDetails details = this.getUserDetailsDao().get(username, password);
 
         if (details != null) {
-            // Create corresponding User instance and add it to the connected users list
+            // Create corresponding User instance
             success = true;
             User user = new User(details);
+
+            // Load personal wallet
+            Wallet wallet = new Wallet(this.getTransactionDao().get(user.getDetails().getId()));
+            user.setWallet(wallet);
+
+            // Add user instance to the connected users list
             this.getLoggedUsers().add(user);
         } else {
             success = false;
@@ -57,5 +68,9 @@ public class UserManager {
 
     public UserDetailsDao getUserDetailsDao() {
         return this.userDetailsDao;
+    }
+
+    public TransactionDao getTransactionDao() {
+        return this.transactionDao;
     }
 }
