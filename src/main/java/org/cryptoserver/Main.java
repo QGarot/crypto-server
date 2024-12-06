@@ -19,12 +19,19 @@ public class Main {
 
         System.out.println("Database & all managers are loaded!");
 
+        //testSql();
+
         try (Server server = new Server(30000)) {
             server.listenClientConnection();
         } catch (IOException e) {
             System.out.println("Server could not be started!");
         }
         //testAPI();
+    }
+
+    public static void testSql() {
+        //CryptocurrenciesDao testDao = new CryptocurrenciesDao();
+        //testDao.insert(new Cryptocurrency("Bitcoin", "BTC"));
     }
 
     public static void testAPI() {
